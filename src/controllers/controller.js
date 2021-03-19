@@ -1,17 +1,20 @@
-var mongoose = require('mongoose'),
+const mongoose = require('mongoose'),
     Schema = mongoose.Schema;
+const { Actor } = require('./ActorController')
 
-var videoSchema = new Schema({
-    
-    title: { type: String },
+let videoSchema = new Schema({
+    title: { type: String , required:true},
     year: { type: Number },
     rated: { type: String },
     runtime: { type: Number },
     countries: { type: Array, "default": [] },
     genre: { type: Array, "default": [] },
-    director: { type: String },
+    direrctor: { type: String },
     writers: { type: Array, "default": [] },
-    actors: { type: Array, "default": [] },
+    actors: [{
+        type: Schema.Types.ObjectId,
+        ref: 'actor'
+    }],
     plot: { type: String },
     poster: { type: String },
     imdb: { type: Object },
@@ -25,6 +28,8 @@ var videoSchema = new Schema({
 
 TVShow = mongoose.model('video', videoSchema);
 
+//modelo con el esquema se especifica el nombre de la coleccion
+
 //GET - Return all tvshows in the DB    
 
 exports.findAllTVShows = function (req, res) {
@@ -35,9 +40,6 @@ exports.findAllTVShows = function (req, res) {
         res.status(200).jsonp(tvshows);
     });
 };
-
-
-
 
 //GET - Return a TVShow with specified ID
 
@@ -55,9 +57,7 @@ exports.addTVShow = function (req, res) {
     console.log('POST');
     console.log(req.body);
 
-
-
-    var tvshow = new TVShow({
+    let tvshow = new TVShow({
 
         title: req.body.title,
         year: req.body.year,
@@ -83,22 +83,20 @@ exports.addTVShow = function (req, res) {
         res.status(200).jsonp(tvshow);
     });
 };
+
 //PUT - Update a register already exists
 exports.updateTVShow = function (req, res) {
     TVShow.findById(req.params.id, function (err, tvshow) {
-
-
-
+        // tvshow={...tvshow,...req.body};
         tvshow.title = req.body.title;
         tvshow.year = req.body.year;
         tvshow.rated = req.body.rated;
         tvshow.runtime = req.body.runtime,
-            tvshow.countries = req.body.countries;
+        tvshow.countries = req.body.countries;
         tvshow.genre = req.body.genre;
         tvshow.director = req.body.director;
         tvshow.writers = req.body.writers;
         tvshow.actors = req.body.actors;
-
         tvshow.plot = req.body.plot;
         tvshow.poster = req.body.poster;
         tvshow.imdb = req.body.imdb;
